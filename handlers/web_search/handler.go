@@ -20,19 +20,30 @@ func init() {
 		if err != nil {
 			return nil, err
 		}
-		return NewHandler(provider, cfg.Handlers.WebSearch.MaxResults).Handle, nil
+		return NewHandler(provider, cfg.Handlers.WebSearch.DefaultResults, cfg.Handlers.WebSearch.MaxResults).Handle, nil
 	})
 }
 
 type Handler struct {
-	provider   providers.SearchProvider
-	maxResults int
+	provider       providers.SearchProvider
+	defaultResults int
+	maxResults     int
 }
 
-func NewHandler(provider providers.SearchProvider, maxResults int) *Handler {
+func NewHandler(provider providers.SearchProvider, defaultResults, maxResults int) *Handler {
+	if maxResults <= 0 {
+		maxResults = defaultResults
+	}
+	if defaultResults <= 0 {
+		defaultResults = maxResults
+	}
+	if defaultResults > maxResults {
+		defaultResults = maxResults
+	}
 	return &Handler{
-		provider:   provider,
-		maxResults: maxResults,
+		provider:       provider,
+		defaultResults: defaultResults,
+		maxResults:     maxResults,
 	}
 }
 
@@ -47,7 +58,7 @@ func (h *Handler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp
 		return mcp.NewToolResultError("缺少必填参数 query"), nil
 	}
 
-	maxResults := h.maxResults
+	maxResults := h.defaultResults
 	if raw, ok := args["max_results"]; ok {
 		switch v := raw.(type) {
 		case float64:
@@ -55,6 +66,12 @@ func (h *Handler) Handle(ctx context.Context, request mcp.CallToolRequest) (*mcp
 		case int:
 			maxResults = v
 		}
+	}
+	if maxResults <= 0 {
+		maxResults = h.defaultResults
+	}
+	if maxResults > h.maxResults {
+		maxResults = h.maxResults
 	}
 
 	results, err := h.provider.Search(ctx, query, maxResults)

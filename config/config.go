@@ -25,6 +25,7 @@ type ServerConfig struct {
 type WebSearchConfig struct {
 	Provider       string                     `json:"provider"`
 	MaxResults     int                        `json:"max_results"`
+	DefaultResults int                        `json:"default_results"`
 	TimeoutSeconds int                        `json:"timeout_seconds"`
 	APIURL         string                     `json:"api_url"`
 	APIKeyEnv      string                     `json:"api_key_env"`
@@ -91,6 +92,12 @@ func (c *Config) validate() error {
 	}
 	if c.Handlers.WebSearch.MaxResults <= 0 {
 		return fmt.Errorf("handlers.web_search.max_results must be greater than 0")
+	}
+	if c.Handlers.WebSearch.DefaultResults <= 0 {
+		c.Handlers.WebSearch.DefaultResults = c.Handlers.WebSearch.MaxResults
+	}
+	if c.Handlers.WebSearch.DefaultResults > c.Handlers.WebSearch.MaxResults {
+		c.Handlers.WebSearch.DefaultResults = c.Handlers.WebSearch.MaxResults
 	}
 	if c.Handlers.WebSearch.TimeoutSeconds <= 0 {
 		return fmt.Errorf("handlers.web_search.timeout_seconds must be greater than 0")

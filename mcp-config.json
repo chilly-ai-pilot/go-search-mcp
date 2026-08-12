@@ -6,7 +6,8 @@
   "handlers": {
     "web_search": {
       "provider": "tavily",
-      "max_results": 5,
+      "max_results": 20,
+      "default_results": 5,
       "timeout_seconds": 30,
       "api_url": "https://api.tavily.com/search",
       "api_key_env": "TAVILY_API_KEY",
@@ -33,7 +34,7 @@
           },
           "max_results": {
             "type": "integer",
-            "description": "返回结果的最大数量，默认使用配置文件中的 handlers.web_search.max_results"
+            "description": "返回结果的最大数量；不传时使用默认值，超过最大值时自动截断。"
           }
         },
         "required": ["query"]
