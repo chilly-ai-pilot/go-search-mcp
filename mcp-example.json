@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "go-search-mcp": {
+      "command": "${workspaceFolder}/go-search-mcp",
+      "args": [
+        "-config",
+        "${workspaceFolder}/mcp-config.json"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "${env:TAVILY_API_KEY}"
+      }
+    }
+  }
+}

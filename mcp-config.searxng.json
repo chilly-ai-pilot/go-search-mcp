@@ -1,0 +1,42 @@
+{
+  "server": {
+    "name": "go-search-mcp",
+    "version": "1.0.0"
+  },
+  "handlers": {
+    "web_search": {
+      "provider": "searxng",
+      "max_results": 5,
+      "timeout_seconds": 30,
+      "api_url": "http://localhost:8888/search",
+      "providers": {
+        "tavily": {
+          "search_depth": "basic"
+        },
+        "searxng": {
+          "categories": "general"
+        }
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "web_search",
+      "description": "当知识库内容不足以回答用户问题时，上网搜索补充信息。调用前请确认本地检索结果已不足。",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "搜索关键词"
+          },
+          "max_results": {
+            "type": "integer",
+            "description": "返回结果的最大数量，默认使用配置文件中的 handlers.web_search.max_results"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  ]
+}
